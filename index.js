@@ -1,3 +1,5 @@
+const msgpack = require('@msgpack/msgpack');
+
 const main = async () => {
   // just fetch with email as URI
   const task0Json = await fetch(
@@ -45,8 +47,7 @@ const main = async () => {
   const convertedBytes = hexToBytes(task5EncryptedString);
   const decryptedBytes = xorEncrypt(convertedBytes, keyBytes);
   const resultingHex = bytesToHex(decryptedBytes);
-  // console.log(task5EncryptedString + ' -> ' + resultingHex);
-  const task5 = await fetchNextTask('task_' + resultingHex, true);
+  const task5 = await fetchNextTask('task_' + resultingHex);
 
   console.log(task5);
 
@@ -54,7 +55,18 @@ const main = async () => {
   const task6EncryptedString = getEncryptedString(task5);
   const messagepackIndex = task5.encryption_method.indexOf('pack:') + 6;
   const messagepack = task5.encryption_method.slice(messagepackIndex);
-  console.log(messagepack);
+  const buf = Buffer.from(messagepack, 'base64');
+  const uint8 = Uint8Array.from(buf);
+  const positions = msgpack.decode(uint8);
+  const unshuffledCharArray = [];
+  for (let i = 0; i < positions.length; i++) {
+    unshuffledCharArray[positions[i]] = task6EncryptedString.charAt(i);
+  }
+  const task6DecryptedString = unshuffledCharArray.join('');
+  const task6Path = 'task_' + task6DecryptedString;
+  const task6 = await fetchNextTask(task6Path);
+
+  console.log(task6);
 };
 
 const getEncryptedString = (taskObject) => {
@@ -66,12 +78,9 @@ const getPathFromCharArray = (charArray) => {
     return (prev += cur);
   }, 'task_');
 };
-const fetchNextTask = async (path, shouldPrint = false) => {
+const fetchNextTask = async (path) => {
   const taskJson = await fetch(`https://ciphersprint.pulley.com/${path}`);
-  // if (shouldPrint) console.log(taskJson);
-
   const task = await taskJson.json();
-  // if (shouldPrint) console.log(task);
   return task;
 };
 const hexToBytes = (hex) => {

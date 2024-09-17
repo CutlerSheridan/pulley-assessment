@@ -1,0 +1,15 @@
+{
+  "name": "pulley",
+  "version": "0.0.1",
+  "description": "## [PROJECT LOGLINE]",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Cutler Sheridan <cutler.sheridan@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@msgpack/msgpack": "^3.0.0-beta2"
+  }
+}
