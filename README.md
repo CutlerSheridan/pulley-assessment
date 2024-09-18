@@ -4,8 +4,6 @@
 
 #### TODO NEXT
 
-- solve level 6 (likely impossible as it's a gimmick)
-
 #### TODO LATER
 
 ##### Features
@@ -15,6 +13,10 @@
 ##### Style
 
 #### DONE
+
+_0.2.0_
+
+- write functions that would solve level 6 if it were possible
 
 _0.1.0_
 

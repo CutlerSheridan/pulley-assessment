@@ -1,4 +1,5 @@
 const msgpack = require('@msgpack/msgpack');
+const { createHash } = require('node:crypto');
 
 const main = async () => {
   // just fetch with email as URI
@@ -67,6 +68,12 @@ const main = async () => {
   const task6 = await fetchNextTask(task6Path);
 
   console.log(task6);
+  // task 7 - hashed with sha256, good luck - this is a gimmick, there is no way to solve this task
+  // const task7EncryptedString = getEncryptedString(task6);
+  // const task7Path = 'task_' + bruteForceSHA256(task7EncryptedString, 32);
+  // const task7 = await fetchNextTask(task7Path);
+
+  // console.log(task7);
 };
 
 const getEncryptedString = (taskObject) => {
@@ -96,6 +103,34 @@ const xorEncrypt = (hexBytes, keyBytes) => {
 };
 const bytesToHex = (bytes) => {
   return bytes.map((x) => x.toString(16).padStart(2, '0')).join('');
+};
+// below functions are for gimmick impossible task 7
+const charArray = [...'abcdefghijklmnopqrstuvwxyz0123456789'];
+function* generateCombinations(length, charArray) {
+  const counters = Array(length).fill(0);
+  while (true) {
+    yield counters.map((x) => charArray[x]).join('');
+    let idx = 0;
+    while (idx < length && ++counters[idx] === charArray.length) {
+      counters[idx] = 0;
+      idx++;
+    }
+    if (idx === length) break;
+  }
+}
+const hashString = (input) => {
+  return createHash('sha256').update(input).digest('hex');
+};
+const bruteForceSHA256 = (targetHash, length) => {
+  console.log(`Trying all combinations with length: ${length}`);
+  for (const combination of generateCombinations(length, charArray)) {
+    const hashedCombination = hashString(combination);
+    if (hashedCombination === targetHash) {
+      console.log(`Match found!  The string is ${combination}`);
+      return combination;
+    }
+  }
+  console.log('No match found with given length.');
 };
 
 main();
